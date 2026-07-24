@@ -10,10 +10,9 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-
         try {
             const response = await fetch(
-                "http://127.0.0.1:8000/user/login/",
+                `${import.meta.env.VITE_API_URL}/user/login/`,
                 {
                     method: "POST",
                     headers: {
@@ -29,80 +28,63 @@ function Login() {
             const data = await response.json();
 
             if (data.token) {
-                localStorage.setItem(
-                    "access",
-                    data.token.access
-                );
+                localStorage.setItem("access", data.token.access);
+                localStorage.setItem("refresh", data.token.refresh);
 
-                localStorage.setItem(
-                    "refresh",
-                    data.token.refresh
-                );
+                alert("Login Successful 💚");
 
-                alert("Login Successful");
+                // ✅ Redirect based on surprise status
+                if (data.has_seen_surprise === false) {
+                    navigate("/surprise");
+                } else {
+                    navigate("/dashboard");
+                }
 
-                navigate("/dashboard");
             } else {
-                alert(
-                    data.errors ||
-                    data.message ||
-                    "Login Failed"
-                );
+                alert(data.errors || data.message || "Login Failed");
             }
         } catch (error) {
             console.log(error);
             alert("Something went wrong");
         }
-
-
     };
 
-    return (<div className="page-container"> <div className="card"> <h1>Login</h1>
+    return (
+        <div className="page-container">
+            <div className="card">
+                <h1>Login</h1>
 
+                <form onSubmit={handleSubmit}>
+                    <div className="input-group">
+                        <input
+                            type="email"
+                            placeholder="Enter Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
 
-        <form onSubmit={handleSubmit}>
-            <div className="input-group">
-                <input
-                    type="email"
-                    placeholder="Enter Email"
-                    value={email}
-                    onChange={(e) =>
-                        setEmail(e.target.value)
-                    }
-                    required
-                />
+                    <div className="input-group">
+                        <input
+                            type="password"
+                            placeholder="Enter Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="btn">
+                        Login
+                    </button>
+                </form>
+
+                <Link to="/" className="auth-link">
+                    Don't have an account? Register
+                </Link>
             </div>
-
-            <div className="input-group">
-                <input
-                    type="password"
-                    placeholder="Enter Password"
-                    value={password}
-                    onChange={(e) =>
-                        setPassword(e.target.value)
-                    }
-                    required
-                />
-            </div>
-
-            <button
-                type="submit"
-                className="btn"
-            >
-                Login
-            </button>
-        </form>
-
-        <Link
-            to="/"
-            className="auth-link"
-        >
-            Don't have an account? Register
-        </Link>
-    </div>
-    </div>
-
-
+        </div>
     );
 }
 

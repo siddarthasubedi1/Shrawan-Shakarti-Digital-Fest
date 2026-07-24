@@ -63,13 +63,12 @@ class MyUser(AbstractBaseUser):
     last_name = models.CharField(max_length=100)
 
     date_of_birth = models.DateField(null=True, blank=True)
-
     photo = models.ImageField(upload_to="profile_photos/", null=True, blank=True)
 
-    term_condition = models.BooleanField(
-        default=False,
-        null=False,
-    )
+    term_condition = models.BooleanField(default=False)
+
+    # ✅ NEW FIELD (IMPORTANT)
+    has_seen_surprise = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,8 +1,7 @@
-from django.shortcuts import render
 from Register.serializers import RegisterSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import APIView
+from rest_framework.views import APIView
 from Register.models import MyUser
 from django.db import IntegrityError
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,7 +9,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
 
-# token generator function
+# ✅ TOKEN GENERATOR
 def get_tokens_for_user(user):
     if not user.is_active:
         raise AuthenticationFailed("User is not active")
@@ -23,15 +22,8 @@ def get_tokens_for_user(user):
     }
 
 
+# ✅ REGISTER
 class RegistrationView(APIView):
-    def get(self, request):
-        user = MyUser.objects.all()
-        serializer = RegisterSerializer(user, many=True)
-        return Response(
-            {"message": "All registered user", "data": serializer.data},
-            status=status.HTTP_200_OK,
-        )
-
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -51,28 +43,7 @@ class RegistrationView(APIView):
         )
 
 
-class DeleteUser(APIView):
-    def delete(self, request, pk):
-        try:
-            user = MyUser.objects.get(pk=pk)
-            user.delete()
-            return Response(
-                {"message": "User deleted successfully"},
-                status=status.HTTP_200_OK,
-            )
-        except MyUser.DoesNotExist:
-            return Response(
-                {"message": "User not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        except IntegrityError:
-            return Response(
-                {"message": "Cannot delete user because related records exist."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
+# ✅ LOGIN
 class LoginUser(APIView):
     def post(self, request):
         email = request.data.get("email")
@@ -81,25 +52,81 @@ class LoginUser(APIView):
         try:
             user = MyUser.objects.get(email=email)
 
-            if user is not None and user.check_password(password):
-
+            if user.check_password(password):
                 token = get_tokens_for_user(user)
 
                 return Response(
-                    {"token": token, "message": "Login successful"},
+                    {
+                        "token": token,
+                        "message": "Login successful",
+                        "has_seen_surprise": user.has_seen_surprise,
+                    },
                     status=status.HTTP_200_OK,
                 )
-            else:
-                return Response(
-                    {"errors": "Email or password is invalid"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+
+            return Response(
+                {"errors": "Email or password is invalid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         except MyUser.DoesNotExist:
             return Response(
-                {"message": "user doesnot exit"}, status=status.HTTP_404_NOT_FOUND
+                {"message": "User does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
 
+# ✅ SURPRISE VIEW
+class SurpriseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.has_seen_surprise:
+            return Response(
+                {"message": "You have already seen the surprise 💚"},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {
+                "title": "🌿 Happy Shrawan 🌿",
+                "message": f"""
+                Dear {user.first_name} 💚,
+                In this beautiful month of Shrawan,
+                I just want to say you are the most special gift in my life.
+                May this rain bring happiness, peace and endless love to you 🌧️✨
+                """,
+            }
+        )
+
+    def post(self, request):
+        user = request.user
+        user.has_seen_surprise = True
+        user.save()
+
+        return Response(
+            {"message": "Surprise marked as seen ✅"},
+            status=status.HTTP_200_OK,
+        )
+
+
+# ✅ PROFILE
+class UserProfile(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = RegisterSerializer(request.user)
+        return Response(
+            {
+                "message": "Profile fetched successfully",
+                "data": serializer.data,
+            }
+        )
+
+
+# ✅ LOGOUT
 class LogoutUser(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -116,20 +143,6 @@ class LogoutUser(APIView):
 
         except Exception:
             return Response(
-                {"errors": "Invalid token, something went wrong"},
+                {"errors": "Invalid token"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
-class UserProfile(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = RegisterSerializer(request.user)
-
-        return Response(
-            {
-                "message": "Profile fetched successfully",
-                "data": serializer.data,
-            }
-        )

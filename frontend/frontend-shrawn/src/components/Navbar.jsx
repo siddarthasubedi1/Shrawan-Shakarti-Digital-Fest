@@ -11,7 +11,7 @@ function Navbar() {
 
 
             const response = await fetch(
-                "http://127.0.0.1:8000/user/profile/",
+                `${import.meta.env.VITE_API_URL}/user/profile/`,
                 {
                     headers: {
                         Authorization: `Bearer ${token} `,
@@ -34,7 +34,7 @@ function Navbar() {
 
 
         await fetch(
-            "http://127.0.0.1:8000/user/logout/",
+            `${import.meta.env.VITE_API_URL}/user/logout/`,
             {
                 method: "POST",
                 headers: {
@@ -65,7 +65,7 @@ function Navbar() {
                 {user && (
                     <img
                         className="profile-icon"
-                        src={`http://127.0.0.1:8000${user.photo}`}
+                        src={`${import.meta.env.VITE_API_URL}${user.photo}`}
                         alt="profile"
                     />
                 )}
