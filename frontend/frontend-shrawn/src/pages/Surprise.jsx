@@ -1,108 +1,118 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Confetti from "react-confetti";
+import { apiRequest } from "../utils/api";
+import PageWrapper from "../components/PageWrapper";
+import Spinner from "../components/Spinner";
 
 function Surprise() {
-    const [message, setMessage] = useState("");
     const [title, setTitle] = useState("");
-    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState("");
+    const [alreadySeen, setAlreadySeen] = useState(false);
+    const [opened, setOpened] = useState(false);
+
     const navigate = useNavigate();
 
-    const access = localStorage.getItem("access");
-
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_URL}/user/surprise/`, {
-            headers: {
-                Authorization: `Bearer ${access}`,
-            },
-        })
+        apiRequest("/user/surprise/")
             .then((res) => res.json())
             .then((data) => {
                 if (data.title) {
                     setTitle(data.title);
                     setMessage(data.message);
+                } else {
+                    // ✅ already seen
+                    setAlreadySeen(true);
                 }
             })
             .catch((err) => console.log(err));
     }, []);
 
-    const handleOpenGift = async () => {
-        setOpen(true);
+    const handleOpen = async () => {
+        setOpened(true);
 
-        await fetch(`${import.meta.env.VITE_API_URL}/user/surprise/`, {
+        await apiRequest("/user/surprise/", {
             method: "POST",
-            headers: {
-                Authorization: `Bearer ${access}`,
-            },
         });
-
-        setTimeout(() => {
-            navigate("/dashboard");
-        }, 6000);
     };
 
+    if (!title && !alreadySeen) return <Spinner />;
+
     return (
-        <div style={styles.container}>
-            {open && <Confetti />}
+        <PageWrapper>
+            <div style={styles.card}>
+                <h1 style={styles.title}>
+                    🌿 Shrawan Surprise 🌿
+                </h1>
 
-            <h1 style={styles.title}>{title}</h1>
+                {alreadySeen ? (
+                    <p style={styles.seenText}>
+                        You have already opened your surprise 💚
+                    </p>
+                ) : !opened ? (
+                    <button
+                        style={styles.button}
+                        onClick={handleOpen}
+                    >
+                        🎁 Open Your Surprise
+                    </button>
+                ) : (
+                    <p style={styles.message}>
+                        {message}
+                    </p>
+                )}
 
-            {!open ? (
-                <button style={styles.button} onClick={handleOpenGift}>
-                    🎁 Open Your Surprise
+                <button
+                    style={styles.backButton}
+                    onClick={() => navigate("/dashboard")}
+                >
+                    Back to Dashboard
                 </button>
-            ) : (
-                <div style={styles.card}>
-                    <p style={styles.message}>{message}</p>
-                </div>
-            )}
-
-            {/* Optional romantic background music */}
-            {open && (
-                <audio autoPlay loop>
-                    <source src="/music.mp3" type="audio/mp3" />
-                </audio>
-            )}
-        </div>
+            </div>
+        </PageWrapper>
     );
 }
 
 const styles = {
-    container: {
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom, #c6f6d5, #9ae6b4)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "20px",
-    },
-    title: {
-        fontSize: "40px",
-        color: "#065f46",
-        marginBottom: "30px",
-    },
-    button: {
-        padding: "15px 30px",
-        fontSize: "20px",
-        borderRadius: "30px",
-        border: "none",
-        backgroundColor: "#ec4899",
-        color: "white",
-        cursor: "pointer",
-    },
     card: {
         backgroundColor: "white",
-        padding: "30px",
+        padding: "40px",
         borderRadius: "20px",
-        maxWidth: "500px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+        width: "100%",
+        maxWidth: "420px",
+        boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
+        textAlign: "center",
+    },
+    title: {
+        marginBottom: "20px",
+        color: "#166534",
+    },
+    button: {
+        padding: "12px 25px",
+        backgroundColor: "#f59e0b",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        marginBottom: "20px",
     },
     message: {
-        fontSize: "20px",
-        color: "#374151",
+        fontSize: "18px",
+        marginBottom: "20px",
         whiteSpace: "pre-line",
+    },
+    seenText: {
+        fontSize: "16px",
+        marginBottom: "20px",
+        color: "#166534",
+        fontStyle: "italic",
+    },
+    backButton: {
+        padding: "10px 18px",
+        backgroundColor: "#16a34a",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
     },
 };
 

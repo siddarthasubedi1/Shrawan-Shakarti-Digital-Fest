@@ -31,7 +31,7 @@ function Login() {
                 localStorage.setItem("access", data.token.access);
                 localStorage.setItem("refresh", data.token.refresh);
 
-                alert("Login Successful 💚");
+                // alert("Login Successful 💚");
 
                 // ✅ Redirect based on surprise status
                 if (data.has_seen_surprise === false) {

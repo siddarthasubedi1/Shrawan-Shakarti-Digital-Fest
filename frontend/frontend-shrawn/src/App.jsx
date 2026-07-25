@@ -7,10 +7,13 @@ import Profile from "./pages/Profile";
 import Surprise from "./pages/Surprise";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -38,6 +41,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Surprise />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
             </ProtectedRoute>
           }
         />

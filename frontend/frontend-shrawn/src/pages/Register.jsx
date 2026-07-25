@@ -84,9 +84,9 @@ function Register() {
                 await response.json();
 
             if (response.ok) {
-                alert(
-                    "Registration Successful"
-                );
+                // alert(
+                //     "Registration Successful"
+                // );
 
                 navigate("/login");
             } else {

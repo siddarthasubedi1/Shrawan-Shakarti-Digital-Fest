@@ -4,6 +4,7 @@ from Register.views import (
     LogoutUser,
     UserProfile,
     SurpriseView,
+    ChangePasswordView,
 )
 
 from django.urls import path
@@ -14,4 +15,5 @@ urlpatterns = [
     path("logout/", LogoutUser.as_view(), name="logout_user"),
     path("profile/", UserProfile.as_view(), name="profile"),
     path("surprise/", SurpriseView.as_view(), name="surprise"),
+    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
 ]

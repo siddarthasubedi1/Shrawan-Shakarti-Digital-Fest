@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import check_password
 
 
 # ✅ TOKEN GENERATOR
@@ -83,11 +84,11 @@ class SurpriseView(APIView):
     def get(self, request):
         user = request.user
 
-        if user.has_seen_surprise:
-            return Response(
-                {"message": "You have already seen the surprise 💚"},
-                status=status.HTTP_200_OK,
-            )
+        # if user.has_seen_surprise:
+        #     return Response(
+        #         {"message": "You have already seen the surprise 💚"},
+        #         status=status.HTTP_200_OK,
+        #     )
 
         return Response(
             {
@@ -125,6 +126,21 @@ class UserProfile(APIView):
             }
         )
 
+    def put(self, request):
+        user = request.user
+        serializer = RegisterSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Profile updated successfully",
+                    "data": serializer.data,
+                }
+            )
+
+        return Response(serializer.errors, status=400)
+
 
 # ✅ LOGOUT
 class LogoutUser(APIView):
@@ -146,3 +162,23 @@ class LogoutUser(APIView):
                 {"errors": "Invalid token"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not old_password or not new_password:
+            return Response({"error": "Both fields are required"}, status=400)
+
+        if not check_password(old_password, user.password):
+            return Response({"error": "Old password is incorrect"}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"message": "Password changed successfully ✅"}, status=200)
