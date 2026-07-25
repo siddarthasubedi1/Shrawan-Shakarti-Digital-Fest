@@ -35,7 +35,7 @@ function ChangePassword() {
 
     return (
         <PageWrapper>
-            <div style={styles.card}>
+            <div style={styles.card} className="fade-in">
                 <h2 style={styles.title}>🔐 Change Password</h2>
 
                 <form onSubmit={handleChangePassword}>
@@ -82,21 +82,16 @@ function ChangePassword() {
 }
 
 const styles = {
-    // container: {
-    //     minHeight: "100vh",
-    //     paddingTop: "80px",
-    //     background: "#dcfce7",
-    //     display: "flex",
-    //     justifyContent: "center",
-    // },
+
     card: {
         backgroundColor: "white",
         padding: "40px",
         borderRadius: "20px",
         width: "100%",
         maxWidth: "420px",
-        boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
         textAlign: "center",
+        marginTop: "20px",
     },
     title: {
         marginBottom: "20px",
@@ -132,6 +127,17 @@ const styles = {
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
+    },
+    wrapper: {
+        paddingTop: "100px",
+        paddingBottom: "40px",
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        background: "linear-gradient(to bottom right, #dcfce7, #bbf7d0)",
     },
 };
 

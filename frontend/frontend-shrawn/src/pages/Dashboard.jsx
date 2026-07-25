@@ -46,7 +46,7 @@ function Dashboard() {
     return (
         <PageWrapper>
 
-            <div style={styles.card}>
+            <div style={styles.card} className="fade-in">
 
                 {user.photo && (
                     <img
@@ -114,8 +114,9 @@ const styles = {
         borderRadius: "20px",
         width: "100%",
         maxWidth: "420px",
-        boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
         textAlign: "center",
+        marginTop: "20px",
     },
     image: {
         width: "130px",
@@ -170,6 +171,17 @@ const styles = {
         border: "none",
         borderRadius: "8px",
         cursor: "pointer",
+    },
+    wrapper: {
+        paddingTop: "100px",
+        paddingBottom: "40px",
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        background: "linear-gradient(to bottom right, #dcfce7, #bbf7d0)",
     },
 };
 
