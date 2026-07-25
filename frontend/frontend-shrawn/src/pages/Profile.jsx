@@ -39,7 +39,6 @@ function Profile() {
             method: "PUT",
             body: formData,
         });
-
         const data = await response.json();
 
         if (response.ok) {
@@ -48,6 +47,8 @@ function Profile() {
         } else {
             alert("Update Failed");
         }
+        console.log("Calling profile update");
+        console.log("/user/profile/");
     };
 
     if (!user) return <Spinner />;

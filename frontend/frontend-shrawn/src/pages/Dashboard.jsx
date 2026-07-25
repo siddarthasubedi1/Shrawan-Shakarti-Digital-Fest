@@ -46,7 +46,7 @@ function Dashboard() {
     return (
         <PageWrapper>
 
-            <div style={styles.card} className="fade-in">
+            <div style={styles.card} >
 
                 {user.photo && (
                     <img
