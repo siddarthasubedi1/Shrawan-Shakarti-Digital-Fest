@@ -37,13 +37,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "shrawn.urls"
@@ -79,9 +79,13 @@ AUTH_USER_MODEL = "Register.MyUser"
 #         "PORT": "5432",
 #     }
 # }
-
-DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
-
+DATABASES = {
+    "default": dj_database_url.config(
+        default=config(
+            "DATABASE_URL", default="sqlite:///" + str(BASE_DIR / "db.sqlite3")
+        )
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -138,7 +142,9 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://your-frontend-name.vercel.app",
 ]
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
