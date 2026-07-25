@@ -35,16 +35,10 @@ function Profile() {
             formData.append("photo", photoFile);
         }
 
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL} /user/profile / `,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${token} `,
-                },
-                body: formData,
-            }
-        );
+        const response = await apiRequest("/user/profile/", {
+            method: "PUT",
+            body: formData,
+        });
 
         const data = await response.json();
 
@@ -65,7 +59,7 @@ function Profile() {
                 {/* Show Current Photo */}
                 {user.photo && (
                     <img
-                        src={`${import.meta.env.VITE_API_URL}${user.photo} `}
+                        src={`${import.meta.env.VITE_API_URL}${user.photo}`}
                         alt="profile"
                         style={styles.image}
                     />
